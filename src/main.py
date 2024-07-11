@@ -29,7 +29,7 @@ Exceptions Handled:
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse ,RedirectResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 
@@ -45,9 +45,10 @@ from starlette.middleware.cors import CORSMiddleware
 # Other imports
 import os
 from dotenv import load_dotenv
+import uvicorn
 
 # Initialize FastAPI application
-app = FastAPI()
+app = FastAPI(docs_url="/documentation", redoc_url=None)
 
 # Load environment variables
 load_dotenv()
@@ -82,32 +83,24 @@ def custom_openapi():
             "bearerFormat": "JWT",
         }
     }
-    openapi_schema["security"] = [{"bearerAuth": []}]
+    for path, methods in openapi_schema["paths"].items():
+        for method, details in methods.items():
+            if path.startswith("/api/v1/user"):
+                details["security"] = [{"bearerAuth": [{"users": True}]}]
+    
+    
+    app.openapi_schema=openapi_schema
+    return app.openapi_schema
 
-    return openapi_schema
-
-# Base route for application health check
-@app.get("/")
-async def health_check():
-    """
-    Endpoint for checking the health status of the application.
-
-    Returns:
-        dict: A dictionary with application metadata and health status.
-    """
-    try:
-        return {
-            "app":  os.getenv("APP_TITLE"),
-            "version":  os.getenv("APP_VERSION"),
-            "environment":  os.getenv("APP_ENV"),
-        }
-    except Exception as e:
-        return {"status": "unhealthy", "message": str(e)}
 
 # Serve Swagger UI
-@app.get("/api/v1/docs", include_in_schema=False)
+@app.get("/api/v1/documentation", include_in_schema=False)
 async def get_documentation():
     return get_swagger_ui_html(openapi_url="/api/v1/openapi.json", title="API Documentation")
+
+@app.get("/docs", include_in_schema=False)
+async def redirect_to_docs():
+    return RedirectResponse(url="/api/v1/documentation")
 
 
 @app.get("/api/v1/openapi.json", include_in_schema=False)
@@ -122,5 +115,4 @@ app.include_router(social_auth_router, prefix="/api/v1/social-auth", tags=["soci
 
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run("main:app", host=host, port=port, reload=True)

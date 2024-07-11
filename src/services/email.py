@@ -18,7 +18,7 @@ EMAIL_FROM = os.getenv("EMAIL_FROM")
 
 # Initialize Jinja2 environment
 template_env = Environment(
-    loader=FileSystemLoader(os.path.join(os.getcwd(), "app/templates")),
+    loader=FileSystemLoader(os.path.join(os.getcwd(), "src/templates")),
     autoescape=select_autoescape(["html", "xml"]),
 )
 
