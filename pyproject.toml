@@ -2,7 +2,7 @@
 name = "fastapi-sso-auth"
 version = "0.1.0"
 description = "This project is an authentication system that supports email-based registration, login, password management, and social login (Google OAuth). It is built using FastAPI and includes Docker support for easy deployment."
-authors = ["musman-khan <usmankhan@renesistech.com>","shahzad.ahmad <shahzad@renesistech.com>"]
+authors = ["musman-khan <usmankhan@renesistech.com>", "shahzad.ahmad <shahzad@renesistech.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -41,7 +41,6 @@ typer = "==0.12.3"
 typing-extensions = "==4.12.2"
 ujson = "==5.10.0"
 uvicorn = "==0.30.1"
-uvloop = "==0.19.0"
 watchfiles = "==0.22.0"
 websockets = "==12.0"
 passlib = "==1.7.4"
@@ -54,6 +53,9 @@ black = "24.4.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^6.0.0"
+
+[tool.poetry.extras]
+uvloop = ["uvloop"]
 
 [build-system]
 requires = ["poetry-core"]
@@ -68,3 +70,4 @@ include = '\.pyi?$'  # Include .py and .pyi files
 runserver = "python -B src/main.py"
 format = "black src/"
 style= "flake8 src/"
+ 
