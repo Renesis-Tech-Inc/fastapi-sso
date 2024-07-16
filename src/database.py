@@ -4,7 +4,11 @@ asyncio MongoDB driver and environment variables for configuration.
 """
 
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+
 import os
+
+load_dotenv()
 
 # Load environment variables for MongoDB URI and database name
 MONGO_URI = str(os.getenv("MONGO_URI"))

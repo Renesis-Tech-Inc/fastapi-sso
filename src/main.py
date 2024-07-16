@@ -29,7 +29,7 @@ Exceptions Handled:
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse ,RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 
@@ -87,9 +87,8 @@ def custom_openapi():
         for method, details in methods.items():
             if path.startswith("/api/v1/user"):
                 details["security"] = [{"bearerAuth": [{"users": True}]}]
-    
-    
-    app.openapi_schema=openapi_schema
+
+    app.openapi_schema = openapi_schema
     return app.openapi_schema
 
 
@@ -97,6 +96,7 @@ def custom_openapi():
 @app.get("/api/v1/documentation", include_in_schema=False)
 async def get_documentation():
     return get_swagger_ui_html(openapi_url="/api/v1/openapi.json", title="API Documentation")
+
 
 @app.get("/docs", include_in_schema=False)
 async def redirect_to_docs():
@@ -106,6 +106,40 @@ async def redirect_to_docs():
 @app.get("/api/v1/openapi.json", include_in_schema=False)
 async def get_open_api_endpoint():
     return JSONResponse(content=custom_openapi())
+
+# Base route for application health check
+@app.get("/")
+async def health_check():
+    """
+    Endpoint for checking the health status of the application.
+
+    Returns:
+        dict: A dictionary with application metadata and health status.
+    """
+    try:
+        return {
+            "app": os.getenv("APP_TITLE"),
+            "version": os.getenv("APP_VERSION"),
+            "environment": os.getenv("APP_ENV"),
+        }
+    except Exception as e:
+        return {"status": "unhealthy", "message": str(e)}
+
+
+# Health Check Route
+@app.get("/health")
+async def health_check():
+    """
+    Endpoint for checking the health status of the application.
+
+    Returns:
+        dict: A dictionary indicating the health status of the application.
+    """
+    try:
+        return {"status": "healthy"}
+    except Exception as e:
+        return {"status": "unhealthy", "message": str(e)}
+
 
 
 # Include routers
