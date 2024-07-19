@@ -30,4 +30,8 @@ def raise_exception(status_code: int, message: Union[str, Any] = None) -> JSONRe
 
     response = {"statusCode": status_code, "message": message}
 
+     # Check if the message is a tuple and convert it to a string
+    if isinstance(response['message'], tuple):
+        response['message'] = response['message'][0]
+
     return JSONResponse(status_code=status_code, content=response)

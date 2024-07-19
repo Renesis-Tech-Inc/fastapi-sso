@@ -23,5 +23,9 @@ def raise_response(status_code: int, message: str = None, payload: dict = None) 
     response = {"statusCode": status_code, "message": message}
     if payload is not None:
         response["payload"] = payload
+    
+     # Check if the message is a tuple and convert it to a string
+    if isinstance(response['message'], tuple):
+        response['message'] = response['message'][0]
 
     return JSONResponse(status_code=status_code, content=response)
